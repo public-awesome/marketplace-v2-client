@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "react-query";
-import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableCollectionOffer, CollectionOffer, ArrayOfCollectionOffer, ConfigForAddr, NullableOffer, Offer, ArrayOfOffer } from "./MarketplaceV2.types";
+import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableBid, Bid, ArrayOfBid, NullableCollectionBid, CollectionBid, ArrayOfCollectionBid, ConfigForAddr } from "./MarketplaceV2.types";
 import { MarketplaceV2QueryClient } from "./MarketplaceV2.client";
 export const marketplaceV2QueryKeys = {
   contract: ([{
@@ -38,36 +38,36 @@ export const marketplaceV2QueryKeys = {
     method: "asks_by_creator_collection",
     args
   }] as const),
-  offer: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "offer",
+  bid: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "bid",
     args
   }] as const),
-  offers: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "offers",
+  bids: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "bids",
     args
   }] as const),
-  offersByTokenPrice: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "offers_by_token_price",
+  bidsByTokenPrice: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "bids_by_token_price",
     args
   }] as const),
-  offersByCreatorCollection: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "offers_by_creator_collection",
+  bidsByCreatorCollection: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "bids_by_creator_collection",
     args
   }] as const),
-  collectionOffer: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "collection_offer",
+  collectionBid: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "collection_bid",
     args
   }] as const),
-  collectionOffers: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "collection_offers",
+  collectionBids: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "collection_bids",
     args
   }] as const),
-  collectionOffersByPrice: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "collection_offers_by_price",
+  collectionBidsByPrice: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "collection_bids_by_price",
     args
   }] as const),
-  collectionOffersByCreatorCollection: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
-    method: "collection_offers_by_creator_collection",
+  collectionBidsByCreatorCollection: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...marketplaceV2QueryKeys.address(contractAddress)[0],
+    method: "collection_bids_by_creator_collection",
     args
   }] as const)
 };
@@ -136,31 +136,31 @@ export const marketplaceV2Queries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  offer: <TData = NullableOffer,>({
+  bid: <TData = NullableBid,>({
     client,
     options
-  }: MarketplaceV2OfferQuery<TData>): UseQueryOptions<NullableOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.offer(client?.contractAddress),
-    queryFn: () => client ? client.offer() : Promise.reject(new Error("Invalid client")),
+  }: MarketplaceV2BidQuery<TData>): UseQueryOptions<NullableBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.bid(client?.contractAddress),
+    queryFn: () => client ? client.bid() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  offers: <TData = ArrayOfOffer,>({
+  bids: <TData = ArrayOfBid,>({
     client,
     options
-  }: MarketplaceV2OffersQuery<TData>): UseQueryOptions<ArrayOfOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.offers(client?.contractAddress),
-    queryFn: () => client ? client.offers() : Promise.reject(new Error("Invalid client")),
+  }: MarketplaceV2BidsQuery<TData>): UseQueryOptions<ArrayOfBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.bids(client?.contractAddress),
+    queryFn: () => client ? client.bids() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  offersByTokenPrice: <TData = ArrayOfOffer,>({
+  bidsByTokenPrice: <TData = ArrayOfBid,>({
     client,
     args,
     options
-  }: MarketplaceV2OffersByTokenPriceQuery<TData>): UseQueryOptions<ArrayOfOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.offersByTokenPrice(client?.contractAddress, args),
-    queryFn: () => client ? client.offersByTokenPrice({
+  }: MarketplaceV2BidsByTokenPriceQuery<TData>): UseQueryOptions<ArrayOfBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.bidsByTokenPrice(client?.contractAddress, args),
+    queryFn: () => client ? client.bidsByTokenPrice({
       collection: args.collection,
       denom: args.denom,
       queryOptions: args.queryOptions,
@@ -169,13 +169,13 @@ export const marketplaceV2Queries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  offersByCreatorCollection: <TData = ArrayOfOffer,>({
+  bidsByCreatorCollection: <TData = ArrayOfBid,>({
     client,
     args,
     options
-  }: MarketplaceV2OffersByCreatorCollectionQuery<TData>): UseQueryOptions<ArrayOfOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.offersByCreatorCollection(client?.contractAddress, args),
-    queryFn: () => client ? client.offersByCreatorCollection({
+  }: MarketplaceV2BidsByCreatorCollectionQuery<TData>): UseQueryOptions<ArrayOfBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.bidsByCreatorCollection(client?.contractAddress, args),
+    queryFn: () => client ? client.bidsByCreatorCollection({
       collection: args.collection,
       creator: args.creator,
       queryOptions: args.queryOptions
@@ -183,31 +183,31 @@ export const marketplaceV2Queries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  collectionOffer: <TData = NullableCollectionOffer,>({
+  collectionBid: <TData = NullableCollectionBid,>({
     client,
     options
-  }: MarketplaceV2CollectionOfferQuery<TData>): UseQueryOptions<NullableCollectionOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.collectionOffer(client?.contractAddress),
-    queryFn: () => client ? client.collectionOffer() : Promise.reject(new Error("Invalid client")),
+  }: MarketplaceV2CollectionBidQuery<TData>): UseQueryOptions<NullableCollectionBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.collectionBid(client?.contractAddress),
+    queryFn: () => client ? client.collectionBid() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  collectionOffers: <TData = ArrayOfCollectionOffer,>({
+  collectionBids: <TData = ArrayOfCollectionBid,>({
     client,
     options
-  }: MarketplaceV2CollectionOffersQuery<TData>): UseQueryOptions<ArrayOfCollectionOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.collectionOffers(client?.contractAddress),
-    queryFn: () => client ? client.collectionOffers() : Promise.reject(new Error("Invalid client")),
+  }: MarketplaceV2CollectionBidsQuery<TData>): UseQueryOptions<ArrayOfCollectionBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.collectionBids(client?.contractAddress),
+    queryFn: () => client ? client.collectionBids() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  collectionOffersByPrice: <TData = ArrayOfCollectionOffer,>({
+  collectionBidsByPrice: <TData = ArrayOfCollectionBid,>({
     client,
     args,
     options
-  }: MarketplaceV2CollectionOffersByPriceQuery<TData>): UseQueryOptions<ArrayOfCollectionOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.collectionOffersByPrice(client?.contractAddress, args),
-    queryFn: () => client ? client.collectionOffersByPrice({
+  }: MarketplaceV2CollectionBidsByPriceQuery<TData>): UseQueryOptions<ArrayOfCollectionBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.collectionBidsByPrice(client?.contractAddress, args),
+    queryFn: () => client ? client.collectionBidsByPrice({
       collection: args.collection,
       denom: args.denom,
       queryOptions: args.queryOptions
@@ -215,13 +215,13 @@ export const marketplaceV2Queries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  collectionOffersByCreatorCollection: <TData = ArrayOfCollectionOffer,>({
+  collectionBidsByCreatorCollection: <TData = ArrayOfCollectionBid,>({
     client,
     args,
     options
-  }: MarketplaceV2CollectionOffersByCreatorCollectionQuery<TData>): UseQueryOptions<ArrayOfCollectionOffer, Error, TData> => ({
-    queryKey: marketplaceV2QueryKeys.collectionOffersByCreatorCollection(client?.contractAddress, args),
-    queryFn: () => client ? client.collectionOffersByCreatorCollection({
+  }: MarketplaceV2CollectionBidsByCreatorCollectionQuery<TData>): UseQueryOptions<ArrayOfCollectionBid, Error, TData> => ({
+    queryKey: marketplaceV2QueryKeys.collectionBidsByCreatorCollection(client?.contractAddress, args),
+    queryFn: () => client ? client.collectionBidsByCreatorCollection({
       collection: args.collection,
       creator: args.creator,
       queryOptions: args.queryOptions
@@ -234,19 +234,19 @@ export interface MarketplaceV2ReactQuery<TResponse, TData = TResponse> {
   client: MarketplaceV2QueryClient | undefined;
   options?: UseQueryOptions<TResponse, Error, TData>;
 }
-export interface MarketplaceV2CollectionOffersByCreatorCollectionQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionOffer, TData> {
+export interface MarketplaceV2CollectionBidsByCreatorCollectionQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionBid, TData> {
   args: {
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
   };
 }
-export function useMarketplaceV2CollectionOffersByCreatorCollectionQuery<TData = ArrayOfCollectionOffer>({
+export function useMarketplaceV2CollectionBidsByCreatorCollectionQuery<TData = ArrayOfCollectionBid>({
   client,
   args,
   options
-}: MarketplaceV2CollectionOffersByCreatorCollectionQuery<TData>) {
-  return useQuery<ArrayOfCollectionOffer, Error, TData>(marketplaceV2QueryKeys.collectionOffersByCreatorCollection(client?.contractAddress, args), () => client ? client.collectionOffersByCreatorCollection({
+}: MarketplaceV2CollectionBidsByCreatorCollectionQuery<TData>) {
+  return useQuery<ArrayOfCollectionBid, Error, TData>(marketplaceV2QueryKeys.collectionBidsByCreatorCollection(client?.contractAddress, args), () => client ? client.collectionBidsByCreatorCollection({
     collection: args.collection,
     creator: args.creator,
     queryOptions: args.queryOptions
@@ -254,19 +254,19 @@ export function useMarketplaceV2CollectionOffersByCreatorCollectionQuery<TData =
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2CollectionOffersByPriceQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionOffer, TData> {
+export interface MarketplaceV2CollectionBidsByPriceQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionBid, TData> {
   args: {
     collection: string;
     denom: string;
     queryOptions?: QueryOptionsForPriceOffset;
   };
 }
-export function useMarketplaceV2CollectionOffersByPriceQuery<TData = ArrayOfCollectionOffer>({
+export function useMarketplaceV2CollectionBidsByPriceQuery<TData = ArrayOfCollectionBid>({
   client,
   args,
   options
-}: MarketplaceV2CollectionOffersByPriceQuery<TData>) {
-  return useQuery<ArrayOfCollectionOffer, Error, TData>(marketplaceV2QueryKeys.collectionOffersByPrice(client?.contractAddress, args), () => client ? client.collectionOffersByPrice({
+}: MarketplaceV2CollectionBidsByPriceQuery<TData>) {
+  return useQuery<ArrayOfCollectionBid, Error, TData>(marketplaceV2QueryKeys.collectionBidsByPrice(client?.contractAddress, args), () => client ? client.collectionBidsByPrice({
     collection: args.collection,
     denom: args.denom,
     queryOptions: args.queryOptions
@@ -274,37 +274,37 @@ export function useMarketplaceV2CollectionOffersByPriceQuery<TData = ArrayOfColl
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2CollectionOffersQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionOffer, TData> {}
-export function useMarketplaceV2CollectionOffersQuery<TData = ArrayOfCollectionOffer>({
+export interface MarketplaceV2CollectionBidsQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfCollectionBid, TData> {}
+export function useMarketplaceV2CollectionBidsQuery<TData = ArrayOfCollectionBid>({
   client,
   options
-}: MarketplaceV2CollectionOffersQuery<TData>) {
-  return useQuery<ArrayOfCollectionOffer, Error, TData>(marketplaceV2QueryKeys.collectionOffers(client?.contractAddress), () => client ? client.collectionOffers() : Promise.reject(new Error("Invalid client")), { ...options,
+}: MarketplaceV2CollectionBidsQuery<TData>) {
+  return useQuery<ArrayOfCollectionBid, Error, TData>(marketplaceV2QueryKeys.collectionBids(client?.contractAddress), () => client ? client.collectionBids() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2CollectionOfferQuery<TData> extends MarketplaceV2ReactQuery<NullableCollectionOffer, TData> {}
-export function useMarketplaceV2CollectionOfferQuery<TData = NullableCollectionOffer>({
+export interface MarketplaceV2CollectionBidQuery<TData> extends MarketplaceV2ReactQuery<NullableCollectionBid, TData> {}
+export function useMarketplaceV2CollectionBidQuery<TData = NullableCollectionBid>({
   client,
   options
-}: MarketplaceV2CollectionOfferQuery<TData>) {
-  return useQuery<NullableCollectionOffer, Error, TData>(marketplaceV2QueryKeys.collectionOffer(client?.contractAddress), () => client ? client.collectionOffer() : Promise.reject(new Error("Invalid client")), { ...options,
+}: MarketplaceV2CollectionBidQuery<TData>) {
+  return useQuery<NullableCollectionBid, Error, TData>(marketplaceV2QueryKeys.collectionBid(client?.contractAddress), () => client ? client.collectionBid() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2OffersByCreatorCollectionQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfOffer, TData> {
+export interface MarketplaceV2BidsByCreatorCollectionQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfBid, TData> {
   args: {
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
   };
 }
-export function useMarketplaceV2OffersByCreatorCollectionQuery<TData = ArrayOfOffer>({
+export function useMarketplaceV2BidsByCreatorCollectionQuery<TData = ArrayOfBid>({
   client,
   args,
   options
-}: MarketplaceV2OffersByCreatorCollectionQuery<TData>) {
-  return useQuery<ArrayOfOffer, Error, TData>(marketplaceV2QueryKeys.offersByCreatorCollection(client?.contractAddress, args), () => client ? client.offersByCreatorCollection({
+}: MarketplaceV2BidsByCreatorCollectionQuery<TData>) {
+  return useQuery<ArrayOfBid, Error, TData>(marketplaceV2QueryKeys.bidsByCreatorCollection(client?.contractAddress, args), () => client ? client.bidsByCreatorCollection({
     collection: args.collection,
     creator: args.creator,
     queryOptions: args.queryOptions
@@ -312,7 +312,7 @@ export function useMarketplaceV2OffersByCreatorCollectionQuery<TData = ArrayOfOf
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2OffersByTokenPriceQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfOffer, TData> {
+export interface MarketplaceV2BidsByTokenPriceQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfBid, TData> {
   args: {
     collection: string;
     denom: string;
@@ -320,12 +320,12 @@ export interface MarketplaceV2OffersByTokenPriceQuery<TData> extends Marketplace
     tokenId: string;
   };
 }
-export function useMarketplaceV2OffersByTokenPriceQuery<TData = ArrayOfOffer>({
+export function useMarketplaceV2BidsByTokenPriceQuery<TData = ArrayOfBid>({
   client,
   args,
   options
-}: MarketplaceV2OffersByTokenPriceQuery<TData>) {
-  return useQuery<ArrayOfOffer, Error, TData>(marketplaceV2QueryKeys.offersByTokenPrice(client?.contractAddress, args), () => client ? client.offersByTokenPrice({
+}: MarketplaceV2BidsByTokenPriceQuery<TData>) {
+  return useQuery<ArrayOfBid, Error, TData>(marketplaceV2QueryKeys.bidsByTokenPrice(client?.contractAddress, args), () => client ? client.bidsByTokenPrice({
     collection: args.collection,
     denom: args.denom,
     queryOptions: args.queryOptions,
@@ -334,21 +334,21 @@ export function useMarketplaceV2OffersByTokenPriceQuery<TData = ArrayOfOffer>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2OffersQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfOffer, TData> {}
-export function useMarketplaceV2OffersQuery<TData = ArrayOfOffer>({
+export interface MarketplaceV2BidsQuery<TData> extends MarketplaceV2ReactQuery<ArrayOfBid, TData> {}
+export function useMarketplaceV2BidsQuery<TData = ArrayOfBid>({
   client,
   options
-}: MarketplaceV2OffersQuery<TData>) {
-  return useQuery<ArrayOfOffer, Error, TData>(marketplaceV2QueryKeys.offers(client?.contractAddress), () => client ? client.offers() : Promise.reject(new Error("Invalid client")), { ...options,
+}: MarketplaceV2BidsQuery<TData>) {
+  return useQuery<ArrayOfBid, Error, TData>(marketplaceV2QueryKeys.bids(client?.contractAddress), () => client ? client.bids() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface MarketplaceV2OfferQuery<TData> extends MarketplaceV2ReactQuery<NullableOffer, TData> {}
-export function useMarketplaceV2OfferQuery<TData = NullableOffer>({
+export interface MarketplaceV2BidQuery<TData> extends MarketplaceV2ReactQuery<NullableBid, TData> {}
+export function useMarketplaceV2BidQuery<TData = NullableBid>({
   client,
   options
-}: MarketplaceV2OfferQuery<TData>) {
-  return useQuery<NullableOffer, Error, TData>(marketplaceV2QueryKeys.offer(client?.contractAddress), () => client ? client.offer() : Promise.reject(new Error("Invalid client")), { ...options,
+}: MarketplaceV2BidQuery<TData>) {
+  return useQuery<NullableBid, Error, TData>(marketplaceV2QueryKeys.bid(client?.contractAddress), () => client ? client.bid() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }

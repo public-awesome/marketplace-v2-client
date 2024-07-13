@@ -7,7 +7,7 @@
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import { toUtf8 } from "@cosmjs/encoding";
-import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableCollectionOffer, CollectionOffer, ArrayOfCollectionOffer, ConfigForAddr, NullableOffer, Offer, ArrayOfOffer } from "./MarketplaceV2.types";
+import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableBid, Bid, ArrayOfBid, NullableCollectionBid, CollectionBid, ArrayOfCollectionBid, ConfigForAddr } from "./MarketplaceV2.types";
 export interface MarketplaceV2Message {
   contractAddress: string;
   sender: string;
@@ -30,61 +30,129 @@ export interface MarketplaceV2Message {
     details: OrderDetailsForString;
     tokenId: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
-  sellNft: ({
-    collection,
-    details,
-    tokenId
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-    tokenId: string;
-  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   removeAsk: ({
     id
   }: {
     id: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
-  setOffer: ({
+  updateAsk: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  acceptAsk: ({
+    finder,
+    id,
+    maxInput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    maxInput: Coin;
+    recipient?: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  setBid: ({
     collection,
     details,
     tokenId
   }: {
     collection: string;
     details: OrderDetailsForString;
+    tokenId: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  removeBid: ({
+    id
+  }: {
+    id: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  updateBid: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  acceptBid: ({
+    finder,
+    id,
+    minOutput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  setCollectionBid: ({
+    collection,
+    details
+  }: {
+    collection: string;
+    details: OrderDetailsForString;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  removeCollectionBid: ({
+    id
+  }: {
+    id: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  updateCollectionBid: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  acceptCollectionBid: ({
+    finder,
+    id,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
+  sellNft: ({
+    collection,
+    finder,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    collection: string;
+    finder?: string;
+    minOutput: Coin;
+    recipient?: string;
     tokenId: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   buySpecificNft: ({
     collection,
-    details,
+    finder,
+    maxInput,
+    recipient,
     tokenId
   }: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
     tokenId: string;
-  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
-  removeOffer: ({
-    id
-  }: {
-    id: string;
-  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
-  setCollectionOffer: ({
-    collection,
-    details
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
   buyCollectionNft: ({
     collection,
-    details
+    finder,
+    maxInput,
+    recipient
   }: {
     collection: string;
-    details: OrderDetailsForString;
-  }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
-  removeCollectionOffer: ({
-    id
-  }: {
-    id: string;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
   }, _funds?: Coin[]) => MsgExecuteContractEncodeObject;
 }
 export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
@@ -97,14 +165,20 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
     this.updateConfig = this.updateConfig.bind(this);
     this.updateAllowDenoms = this.updateAllowDenoms.bind(this);
     this.setAsk = this.setAsk.bind(this);
-    this.sellNft = this.sellNft.bind(this);
     this.removeAsk = this.removeAsk.bind(this);
-    this.setOffer = this.setOffer.bind(this);
+    this.updateAsk = this.updateAsk.bind(this);
+    this.acceptAsk = this.acceptAsk.bind(this);
+    this.setBid = this.setBid.bind(this);
+    this.removeBid = this.removeBid.bind(this);
+    this.updateBid = this.updateBid.bind(this);
+    this.acceptBid = this.acceptBid.bind(this);
+    this.setCollectionBid = this.setCollectionBid.bind(this);
+    this.removeCollectionBid = this.removeCollectionBid.bind(this);
+    this.updateCollectionBid = this.updateCollectionBid.bind(this);
+    this.acceptCollectionBid = this.acceptCollectionBid.bind(this);
+    this.sellNft = this.sellNft.bind(this);
     this.buySpecificNft = this.buySpecificNft.bind(this);
-    this.removeOffer = this.removeOffer.bind(this);
-    this.setCollectionOffer = this.setCollectionOffer.bind(this);
     this.buyCollectionNft = this.buyCollectionNft.bind(this);
-    this.removeCollectionOffer = this.removeCollectionOffer.bind(this);
   }
 
   updateConfig = ({
@@ -170,31 +244,6 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
       })
     };
   };
-  sellNft = ({
-    collection,
-    details,
-    tokenId
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-    tokenId: string;
-  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender: this.sender,
-        contract: this.contractAddress,
-        msg: toUtf8(JSON.stringify({
-          sell_nft: {
-            collection,
-            details,
-            token_id: tokenId
-          }
-        })),
-        funds: _funds
-      })
-    };
-  };
   removeAsk = ({
     id
   }: {
@@ -214,7 +263,57 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
       })
     };
   };
-  setOffer = ({
+  updateAsk = ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          update_ask: {
+            details,
+            id
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  acceptAsk = ({
+    finder,
+    id,
+    maxInput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    maxInput: Coin;
+    recipient?: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          accept_ask: {
+            finder,
+            id,
+            max_input: maxInput,
+            recipient
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  setBid = ({
     collection,
     details,
     tokenId
@@ -229,7 +328,7 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
         sender: this.sender,
         contract: this.contractAddress,
         msg: toUtf8(JSON.stringify({
-          set_offer: {
+          set_bid: {
             collection,
             details,
             token_id: tokenId
@@ -239,13 +338,211 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
       })
     };
   };
-  buySpecificNft = ({
-    collection,
+  removeBid = ({
+    id
+  }: {
+    id: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          remove_bid: {
+            id
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  updateBid = ({
     details,
-    tokenId
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          update_bid: {
+            details,
+            id
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  acceptBid = ({
+    finder,
+    id,
+    minOutput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          accept_bid: {
+            finder,
+            id,
+            min_output: minOutput,
+            recipient
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  setCollectionBid = ({
+    collection,
+    details
   }: {
     collection: string;
     details: OrderDetailsForString;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          set_collection_bid: {
+            collection,
+            details
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  removeCollectionBid = ({
+    id
+  }: {
+    id: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          remove_collection_bid: {
+            id
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  updateCollectionBid = ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          update_collection_bid: {
+            details,
+            id
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  acceptCollectionBid = ({
+    finder,
+    id,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          accept_collection_bid: {
+            finder,
+            id,
+            min_output: minOutput,
+            recipient,
+            token_id: tokenId
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  sellNft = ({
+    collection,
+    finder,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    collection: string;
+    finder?: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+      value: MsgExecuteContract.fromPartial({
+        sender: this.sender,
+        contract: this.contractAddress,
+        msg: toUtf8(JSON.stringify({
+          sell_nft: {
+            collection,
+            finder,
+            min_output: minOutput,
+            recipient,
+            token_id: tokenId
+          }
+        })),
+        funds: _funds
+      })
+    };
+  };
+  buySpecificNft = ({
+    collection,
+    finder,
+    maxInput,
+    recipient,
+    tokenId
+  }: {
+    collection: string;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
     tokenId: string;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
@@ -256,49 +553,10 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
         msg: toUtf8(JSON.stringify({
           buy_specific_nft: {
             collection,
-            details,
+            finder,
+            max_input: maxInput,
+            recipient,
             token_id: tokenId
-          }
-        })),
-        funds: _funds
-      })
-    };
-  };
-  removeOffer = ({
-    id
-  }: {
-    id: string;
-  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender: this.sender,
-        contract: this.contractAddress,
-        msg: toUtf8(JSON.stringify({
-          remove_offer: {
-            id
-          }
-        })),
-        funds: _funds
-      })
-    };
-  };
-  setCollectionOffer = ({
-    collection,
-    details
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender: this.sender,
-        contract: this.contractAddress,
-        msg: toUtf8(JSON.stringify({
-          set_collection_offer: {
-            collection,
-            details
           }
         })),
         funds: _funds
@@ -307,10 +565,14 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
   };
   buyCollectionNft = ({
     collection,
-    details
+    finder,
+    maxInput,
+    recipient
   }: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
   }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
@@ -320,26 +582,9 @@ export class MarketplaceV2MessageComposer implements MarketplaceV2Message {
         msg: toUtf8(JSON.stringify({
           buy_collection_nft: {
             collection,
-            details
-          }
-        })),
-        funds: _funds
-      })
-    };
-  };
-  removeCollectionOffer = ({
-    id
-  }: {
-    id: string;
-  }, _funds?: Coin[]): MsgExecuteContractEncodeObject => {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-      value: MsgExecuteContract.fromPartial({
-        sender: this.sender,
-        contract: this.contractAddress,
-        msg: toUtf8(JSON.stringify({
-          remove_collection_offer: {
-            id
+            finder,
+            max_input: maxInput,
+            recipient
           }
         })),
         funds: _funds

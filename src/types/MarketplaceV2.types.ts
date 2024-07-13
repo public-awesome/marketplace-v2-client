@@ -36,44 +36,87 @@ export type ExecuteMsg = {
     token_id: string;
   };
 } | {
-  sell_nft: {
+  remove_ask: {
+    id: string;
+  };
+} | {
+  update_ask: {
+    details: OrderDetailsForString;
+    id: string;
+  };
+} | {
+  accept_ask: {
+    finder?: string | null;
+    id: string;
+    max_input: Coin;
+    recipient?: string | null;
+  };
+} | {
+  set_bid: {
     collection: string;
     details: OrderDetailsForString;
     token_id: string;
   };
 } | {
-  remove_ask: {
+  remove_bid: {
     id: string;
   };
 } | {
-  set_offer: {
+  update_bid: {
+    details: OrderDetailsForString;
+    id: string;
+  };
+} | {
+  accept_bid: {
+    finder?: string | null;
+    id: string;
+    min_output: Coin;
+    recipient?: string | null;
+  };
+} | {
+  set_collection_bid: {
     collection: string;
     details: OrderDetailsForString;
+  };
+} | {
+  remove_collection_bid: {
+    id: string;
+  };
+} | {
+  update_collection_bid: {
+    details: OrderDetailsForString;
+    id: string;
+  };
+} | {
+  accept_collection_bid: {
+    finder?: string | null;
+    id: string;
+    min_output: Coin;
+    recipient?: string | null;
+    token_id: string;
+  };
+} | {
+  sell_nft: {
+    collection: string;
+    finder?: string | null;
+    min_output: Coin;
+    recipient?: string | null;
     token_id: string;
   };
 } | {
   buy_specific_nft: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string | null;
+    max_input: Coin;
+    recipient?: string | null;
     token_id: string;
-  };
-} | {
-  remove_offer: {
-    id: string;
-  };
-} | {
-  set_collection_offer: {
-    collection: string;
-    details: OrderDetailsForString;
   };
 } | {
   buy_collection_nft: {
     collection: string;
-    details: OrderDetailsForString;
-  };
-} | {
-  remove_collection_offer: {
-    id: string;
+    finder?: string | null;
+    max_input: Coin;
+    recipient?: string | null;
   };
 };
 export type Uint128 = string;
@@ -108,34 +151,34 @@ export type QueryMsg = {
     query_options?: QueryOptionsForString | null;
   };
 } | {
-  offer: string;
+  bid: string;
 } | {
-  offers: string[];
+  bids: string[];
 } | {
-  offers_by_token_price: {
+  bids_by_token_price: {
     collection: string;
     denom: string;
     query_options?: QueryOptionsForPriceOffset | null;
     token_id: string;
   };
 } | {
-  offers_by_creator_collection: {
+  bids_by_creator_collection: {
     collection: string;
     creator: string;
     query_options?: QueryOptionsForString | null;
   };
 } | {
-  collection_offer: string;
+  collection_bid: string;
 } | {
-  collection_offers: string[];
+  collection_bids: string[];
 } | {
-  collection_offers_by_price: {
+  collection_bids_by_price: {
     collection: string;
     denom: string;
     query_options?: QueryOptionsForPriceOffset | null;
   };
 } | {
-  collection_offers_by_creator_collection: {
+  collection_bids_by_creator_collection: {
     collection: string;
     creator: string;
     query_options?: QueryOptionsForString | null;
@@ -182,14 +225,23 @@ export interface OrderDetailsForAddr {
   recipient?: Addr | null;
 }
 export type ArrayOfAsk = Ask[];
-export type NullableCollectionOffer = CollectionOffer | null;
-export interface CollectionOffer {
+export type NullableBid = Bid | null;
+export interface Bid {
+  collection: Addr;
+  creator: Addr;
+  details: OrderDetailsForAddr;
+  id: string;
+  token_id: string;
+}
+export type ArrayOfBid = Bid[];
+export type NullableCollectionBid = CollectionBid | null;
+export interface CollectionBid {
   collection: Addr;
   creator: Addr;
   details: OrderDetailsForAddr;
   id: string;
 }
-export type ArrayOfCollectionOffer = CollectionOffer[];
+export type ArrayOfCollectionBid = CollectionBid[];
 export interface ConfigForAddr {
   fee_manager: Addr;
   maker_reward_bps: number;
@@ -198,12 +250,3 @@ export interface ConfigForAddr {
   royalty_registry: Addr;
   taker_reward_bps: number;
 }
-export type NullableOffer = Offer | null;
-export interface Offer {
-  collection: Addr;
-  creator: Addr;
-  details: OrderDetailsForAddr;
-  id: string;
-  token_id: string;
-}
-export type ArrayOfOffer = Offer[];

@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableCollectionOffer, CollectionOffer, ArrayOfCollectionOffer, ConfigForAddr, NullableOffer, Offer, ArrayOfOffer } from "./MarketplaceV2.types";
+import { AllowDenoms, InstantiateMsg, ConfigForString, ExecuteMsg, Uint128, OrderDetailsForString, Coin, QueryMsg, QueryBoundForPriceOffset, QueryBoundForString, QueryOptionsForPriceOffset, PriceOffset, QueryOptionsForString, NullableAsk, Addr, Ask, OrderDetailsForAddr, ArrayOfAsk, NullableBid, Bid, ArrayOfBid, NullableCollectionBid, CollectionBid, ArrayOfCollectionBid, ConfigForAddr } from "./MarketplaceV2.types";
 export interface MarketplaceV2ReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForAddr>;
@@ -31,9 +31,9 @@ export interface MarketplaceV2ReadOnlyInterface {
     creator: string;
     queryOptions?: QueryOptionsForString;
   }) => Promise<ArrayOfAsk>;
-  offer: () => Promise<NullableOffer>;
-  offers: () => Promise<ArrayOfOffer>;
-  offersByTokenPrice: ({
+  bid: () => Promise<NullableBid>;
+  bids: () => Promise<ArrayOfBid>;
+  bidsByTokenPrice: ({
     collection,
     denom,
     queryOptions,
@@ -43,8 +43,8 @@ export interface MarketplaceV2ReadOnlyInterface {
     denom: string;
     queryOptions?: QueryOptionsForPriceOffset;
     tokenId: string;
-  }) => Promise<ArrayOfOffer>;
-  offersByCreatorCollection: ({
+  }) => Promise<ArrayOfBid>;
+  bidsByCreatorCollection: ({
     collection,
     creator,
     queryOptions
@@ -52,10 +52,10 @@ export interface MarketplaceV2ReadOnlyInterface {
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
-  }) => Promise<ArrayOfOffer>;
-  collectionOffer: () => Promise<NullableCollectionOffer>;
-  collectionOffers: () => Promise<ArrayOfCollectionOffer>;
-  collectionOffersByPrice: ({
+  }) => Promise<ArrayOfBid>;
+  collectionBid: () => Promise<NullableCollectionBid>;
+  collectionBids: () => Promise<ArrayOfCollectionBid>;
+  collectionBidsByPrice: ({
     collection,
     denom,
     queryOptions
@@ -63,8 +63,8 @@ export interface MarketplaceV2ReadOnlyInterface {
     collection: string;
     denom: string;
     queryOptions?: QueryOptionsForPriceOffset;
-  }) => Promise<ArrayOfCollectionOffer>;
-  collectionOffersByCreatorCollection: ({
+  }) => Promise<ArrayOfCollectionBid>;
+  collectionBidsByCreatorCollection: ({
     collection,
     creator,
     queryOptions
@@ -72,7 +72,7 @@ export interface MarketplaceV2ReadOnlyInterface {
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
-  }) => Promise<ArrayOfCollectionOffer>;
+  }) => Promise<ArrayOfCollectionBid>;
 }
 export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface {
   client: CosmWasmClient;
@@ -87,14 +87,14 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
     this.asks = this.asks.bind(this);
     this.asksByCollectionDenom = this.asksByCollectionDenom.bind(this);
     this.asksByCreatorCollection = this.asksByCreatorCollection.bind(this);
-    this.offer = this.offer.bind(this);
-    this.offers = this.offers.bind(this);
-    this.offersByTokenPrice = this.offersByTokenPrice.bind(this);
-    this.offersByCreatorCollection = this.offersByCreatorCollection.bind(this);
-    this.collectionOffer = this.collectionOffer.bind(this);
-    this.collectionOffers = this.collectionOffers.bind(this);
-    this.collectionOffersByPrice = this.collectionOffersByPrice.bind(this);
-    this.collectionOffersByCreatorCollection = this.collectionOffersByCreatorCollection.bind(this);
+    this.bid = this.bid.bind(this);
+    this.bids = this.bids.bind(this);
+    this.bidsByTokenPrice = this.bidsByTokenPrice.bind(this);
+    this.bidsByCreatorCollection = this.bidsByCreatorCollection.bind(this);
+    this.collectionBid = this.collectionBid.bind(this);
+    this.collectionBids = this.collectionBids.bind(this);
+    this.collectionBidsByPrice = this.collectionBidsByPrice.bind(this);
+    this.collectionBidsByCreatorCollection = this.collectionBidsByCreatorCollection.bind(this);
   }
 
   config = async (): Promise<ConfigForAddr> => {
@@ -151,17 +151,17 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
       }
     });
   };
-  offer = async (): Promise<NullableOffer> => {
+  bid = async (): Promise<NullableBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      offer: {}
+      bid: {}
     });
   };
-  offers = async (): Promise<ArrayOfOffer> => {
+  bids = async (): Promise<ArrayOfBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      offers: {}
+      bids: {}
     });
   };
-  offersByTokenPrice = async ({
+  bidsByTokenPrice = async ({
     collection,
     denom,
     queryOptions,
@@ -171,9 +171,9 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
     denom: string;
     queryOptions?: QueryOptionsForPriceOffset;
     tokenId: string;
-  }): Promise<ArrayOfOffer> => {
+  }): Promise<ArrayOfBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      offers_by_token_price: {
+      bids_by_token_price: {
         collection,
         denom,
         query_options: queryOptions,
@@ -181,7 +181,7 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
       }
     });
   };
-  offersByCreatorCollection = async ({
+  bidsByCreatorCollection = async ({
     collection,
     creator,
     queryOptions
@@ -189,26 +189,26 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
-  }): Promise<ArrayOfOffer> => {
+  }): Promise<ArrayOfBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      offers_by_creator_collection: {
+      bids_by_creator_collection: {
         collection,
         creator,
         query_options: queryOptions
       }
     });
   };
-  collectionOffer = async (): Promise<NullableCollectionOffer> => {
+  collectionBid = async (): Promise<NullableCollectionBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      collection_offer: {}
+      collection_bid: {}
     });
   };
-  collectionOffers = async (): Promise<ArrayOfCollectionOffer> => {
+  collectionBids = async (): Promise<ArrayOfCollectionBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      collection_offers: {}
+      collection_bids: {}
     });
   };
-  collectionOffersByPrice = async ({
+  collectionBidsByPrice = async ({
     collection,
     denom,
     queryOptions
@@ -216,16 +216,16 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
     collection: string;
     denom: string;
     queryOptions?: QueryOptionsForPriceOffset;
-  }): Promise<ArrayOfCollectionOffer> => {
+  }): Promise<ArrayOfCollectionBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      collection_offers_by_price: {
+      collection_bids_by_price: {
         collection,
         denom,
         query_options: queryOptions
       }
     });
   };
-  collectionOffersByCreatorCollection = async ({
+  collectionBidsByCreatorCollection = async ({
     collection,
     creator,
     queryOptions
@@ -233,9 +233,9 @@ export class MarketplaceV2QueryClient implements MarketplaceV2ReadOnlyInterface 
     collection: string;
     creator: string;
     queryOptions?: QueryOptionsForString;
-  }): Promise<ArrayOfCollectionOffer> => {
+  }): Promise<ArrayOfCollectionBid> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      collection_offers_by_creator_collection: {
+      collection_bids_by_creator_collection: {
         collection,
         creator,
         query_options: queryOptions
@@ -265,61 +265,129 @@ export interface MarketplaceV2Interface extends MarketplaceV2ReadOnlyInterface {
     details: OrderDetailsForString;
     tokenId: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  sellNft: ({
-    collection,
-    details,
-    tokenId
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-    tokenId: string;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   removeAsk: ({
     id
   }: {
     id: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  setOffer: ({
+  updateAsk: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  acceptAsk: ({
+    finder,
+    id,
+    maxInput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    maxInput: Coin;
+    recipient?: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  setBid: ({
     collection,
     details,
     tokenId
   }: {
     collection: string;
     details: OrderDetailsForString;
+    tokenId: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  removeBid: ({
+    id
+  }: {
+    id: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateBid: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  acceptBid: ({
+    finder,
+    id,
+    minOutput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  setCollectionBid: ({
+    collection,
+    details
+  }: {
+    collection: string;
+    details: OrderDetailsForString;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  removeCollectionBid: ({
+    id
+  }: {
+    id: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateCollectionBid: ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  acceptCollectionBid: ({
+    finder,
+    id,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  sellNft: ({
+    collection,
+    finder,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    collection: string;
+    finder?: string;
+    minOutput: Coin;
+    recipient?: string;
     tokenId: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   buySpecificNft: ({
     collection,
-    details,
+    finder,
+    maxInput,
+    recipient,
     tokenId
   }: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
     tokenId: string;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  removeOffer: ({
-    id
-  }: {
-    id: string;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  setCollectionOffer: ({
-    collection,
-    details
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   buyCollectionNft: ({
     collection,
-    details
+    finder,
+    maxInput,
+    recipient
   }: {
     collection: string;
-    details: OrderDetailsForString;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  removeCollectionOffer: ({
-    id
-  }: {
-    id: string;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class MarketplaceV2Client extends MarketplaceV2QueryClient implements MarketplaceV2Interface {
@@ -335,14 +403,20 @@ export class MarketplaceV2Client extends MarketplaceV2QueryClient implements Mar
     this.updateConfig = this.updateConfig.bind(this);
     this.updateAllowDenoms = this.updateAllowDenoms.bind(this);
     this.setAsk = this.setAsk.bind(this);
-    this.sellNft = this.sellNft.bind(this);
     this.removeAsk = this.removeAsk.bind(this);
-    this.setOffer = this.setOffer.bind(this);
+    this.updateAsk = this.updateAsk.bind(this);
+    this.acceptAsk = this.acceptAsk.bind(this);
+    this.setBid = this.setBid.bind(this);
+    this.removeBid = this.removeBid.bind(this);
+    this.updateBid = this.updateBid.bind(this);
+    this.acceptBid = this.acceptBid.bind(this);
+    this.setCollectionBid = this.setCollectionBid.bind(this);
+    this.removeCollectionBid = this.removeCollectionBid.bind(this);
+    this.updateCollectionBid = this.updateCollectionBid.bind(this);
+    this.acceptCollectionBid = this.acceptCollectionBid.bind(this);
+    this.sellNft = this.sellNft.bind(this);
     this.buySpecificNft = this.buySpecificNft.bind(this);
-    this.removeOffer = this.removeOffer.bind(this);
-    this.setCollectionOffer = this.setCollectionOffer.bind(this);
     this.buyCollectionNft = this.buyCollectionNft.bind(this);
-    this.removeCollectionOffer = this.removeCollectionOffer.bind(this);
   }
 
   updateConfig = async ({
@@ -384,23 +458,6 @@ export class MarketplaceV2Client extends MarketplaceV2QueryClient implements Mar
       }
     }, fee, memo, _funds);
   };
-  sellNft = async ({
-    collection,
-    details,
-    tokenId
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-    tokenId: string;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      sell_nft: {
-        collection,
-        details,
-        token_id: tokenId
-      }
-    }, fee, memo, _funds);
-  };
   removeAsk = async ({
     id
   }: {
@@ -412,7 +469,41 @@ export class MarketplaceV2Client extends MarketplaceV2QueryClient implements Mar
       }
     }, fee, memo, _funds);
   };
-  setOffer = async ({
+  updateAsk = async ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_ask: {
+        details,
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  acceptAsk = async ({
+    finder,
+    id,
+    maxInput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    maxInput: Coin;
+    recipient?: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      accept_ask: {
+        finder,
+        id,
+        max_input: maxInput,
+        recipient
+      }
+    }, fee, memo, _funds);
+  };
+  setBid = async ({
     collection,
     details,
     tokenId
@@ -422,77 +513,183 @@ export class MarketplaceV2Client extends MarketplaceV2QueryClient implements Mar
     tokenId: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      set_offer: {
+      set_bid: {
         collection,
         details,
+        token_id: tokenId
+      }
+    }, fee, memo, _funds);
+  };
+  removeBid = async ({
+    id
+  }: {
+    id: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      remove_bid: {
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  updateBid = async ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_bid: {
+        details,
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  acceptBid = async ({
+    finder,
+    id,
+    minOutput,
+    recipient
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      accept_bid: {
+        finder,
+        id,
+        min_output: minOutput,
+        recipient
+      }
+    }, fee, memo, _funds);
+  };
+  setCollectionBid = async ({
+    collection,
+    details
+  }: {
+    collection: string;
+    details: OrderDetailsForString;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      set_collection_bid: {
+        collection,
+        details
+      }
+    }, fee, memo, _funds);
+  };
+  removeCollectionBid = async ({
+    id
+  }: {
+    id: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      remove_collection_bid: {
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  updateCollectionBid = async ({
+    details,
+    id
+  }: {
+    details: OrderDetailsForString;
+    id: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_collection_bid: {
+        details,
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  acceptCollectionBid = async ({
+    finder,
+    id,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    finder?: string;
+    id: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      accept_collection_bid: {
+        finder,
+        id,
+        min_output: minOutput,
+        recipient,
+        token_id: tokenId
+      }
+    }, fee, memo, _funds);
+  };
+  sellNft = async ({
+    collection,
+    finder,
+    minOutput,
+    recipient,
+    tokenId
+  }: {
+    collection: string;
+    finder?: string;
+    minOutput: Coin;
+    recipient?: string;
+    tokenId: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      sell_nft: {
+        collection,
+        finder,
+        min_output: minOutput,
+        recipient,
         token_id: tokenId
       }
     }, fee, memo, _funds);
   };
   buySpecificNft = async ({
     collection,
-    details,
+    finder,
+    maxInput,
+    recipient,
     tokenId
   }: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
     tokenId: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       buy_specific_nft: {
         collection,
-        details,
+        finder,
+        max_input: maxInput,
+        recipient,
         token_id: tokenId
-      }
-    }, fee, memo, _funds);
-  };
-  removeOffer = async ({
-    id
-  }: {
-    id: string;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      remove_offer: {
-        id
-      }
-    }, fee, memo, _funds);
-  };
-  setCollectionOffer = async ({
-    collection,
-    details
-  }: {
-    collection: string;
-    details: OrderDetailsForString;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      set_collection_offer: {
-        collection,
-        details
       }
     }, fee, memo, _funds);
   };
   buyCollectionNft = async ({
     collection,
-    details
+    finder,
+    maxInput,
+    recipient
   }: {
     collection: string;
-    details: OrderDetailsForString;
+    finder?: string;
+    maxInput: Coin;
+    recipient?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       buy_collection_nft: {
         collection,
-        details
-      }
-    }, fee, memo, _funds);
-  };
-  removeCollectionOffer = async ({
-    id
-  }: {
-    id: string;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      remove_collection_offer: {
-        id
+        finder,
+        max_input: maxInput,
+        recipient
       }
     }, fee, memo, _funds);
   };
